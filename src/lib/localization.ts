@@ -18,7 +18,7 @@ const songs: Record<
 			composer: 'J.S. Bach',
 			performer: 'Kimiko Ishizaka',
 			credit:
-				'"Open" Goldberg Variations (<a href="https://www.opengoldbergvariations.org" target="_blank">https://www.opengoldbergvariations.org</a>)'
+				'"Open" Goldberg Variations (<a href="https://www.opengoldbergvariations.org" target="_blank" class="underline">https://www.opengoldbergvariations.org</a>)'
 		}
 };
 
@@ -38,8 +38,6 @@ export const baseLanguage: Language = supportedLanguages.includes(
 async function musicPicker() {
 	const keys = Object.keys(musicFiles);
 	if (keys.length === 0) return;
-
-	console.log(keys);
 
 	const song = keys[Math.floor(Math.random() * keys.length)];
 	return {
@@ -61,7 +59,7 @@ export const translations: Record<
 	es: {
 		helpText: "Por favor escribe 'help' para ver los comandos disponibles.",
 		dateLabel: (date: string) => `[${date}]`,
-		about: 'Soy un ingeniero de software.',
+		about: `Soy un ingeniero de software apasionado por el desarrollo de sistemas complejos. Me enfoco en el desarrollo web full-stack principalmente, y cuento con mucha experiencia construyendo servicios web desde cero. También soy compositor, me puedes encontrar en <a href="https://open.spotify.com/artist/0yLF2xizxuMyFictPKMdLr?si=a66L2CqpTH2g85-pX17JJQ" target="_blank" class="text-highlight">[Spotify]</a>.`,
 		cmdNotFound: (cmd: string) =>
 			`Comando desconocido: ${cmd}. Escribe "help" para ver los comandos disponibles.`,
 		music: async (args: string[]) => {
@@ -85,13 +83,13 @@ export const translations: Record<
 			audioElement = new Audio(song.url);
 			audioElement.play();
 
-			return `Ahora escuchando: ${song.title} | ${song.composer}. Escribe music --stop para detener la reproducción.`;
+			return `Ahora escuchando: ${song.title} | ${song.composer}${song.performer ? ` | Intepretado por ${song.performer}` : ''}${song.credit ? ` | Crédito para ${song.credit}` : ''}. Escribe music --stop para detener la reproducción.`;
 		}
 	},
 	en: {
 		helpText: "Please type 'help' to see available commands.",
 		dateLabel: (date: string) => `[${date}]`,
-		about: "I'm a software engineer passionate about complex systems.",
+		about: `I'm a software engineer passionate about building complex systems. Primarily focused on full-stack web development, with ample experience building web services from scratch. I also compose; find me on <a href="https://open.spotify.com/artist/0yLF2xizxuMyFictPKMdLr?si=a66L2CqpTH2g85-pX17JJQ" target="_blank" class="text-highlight">[Spotify]</a>.`,
 		cmdNotFound: (cmd: string) => `Command not found: ${cmd}. Type "help" for available commands`,
 		music: async (args: string[]) => {
 			let song = await musicPicker();

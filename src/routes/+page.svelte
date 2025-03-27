@@ -1,14 +1,37 @@
 <script lang="ts">
 	import { Commands, handleCommand } from '$lib';
 	import { translations as t, baseLanguage } from '$lib/localization';
+	import { commandHelper } from '$lib/store';
 
 	let lang = $state({ helpText: '', dateLabel: (date: string) => date });
 	let isLoading = $state(true);
 	let userInput = $state('');
 	let showCursor = $state(true);
 	let inputContainer = $state<HTMLElement | null>(null);
-	let outputHistory = $state<string[]>([]); // Store command results
+	let outputHistory = $state<string[]>([]);
+	let commandHistory = $state<string[]>([]);
+	let currentHistoryIndex = $state(-1);
+	let savedInput = $state('');
 
+	$effect(() => {
+		let cmd = $commandHelper;
+		let index = 0;
+
+		userInput = '';
+
+		const interval = setInterval(() => {
+			if (index < cmd.length) {
+				userInput += cmd.charAt(index);
+				index++;
+			} else {
+				clearInterval(interval);
+				handleInput(new KeyboardEvent('keydown', { key: 'Enter' }));
+				inputContainer?.focus();
+			}
+		}, 50);
+
+		return () => clearInterval(interval);
+	});
 	const handleInput = async (event: KeyboardEvent) => {
 		if (event.key === 'Backspace') {
 			event.preventDefault();
@@ -16,12 +39,42 @@
 		} else if (event.key === 'Enter') {
 			event.preventDefault();
 			if (userInput.trim() !== '') {
-				outputHistory = [...outputHistory, `$ ${userInput}`, await handleCommand(userInput)];
+				const command = userInput.trim();
+				outputHistory = [...outputHistory, `$ ${command}`, await handleCommand(command)];
+				commandHistory = [...commandHistory, command];
+				currentHistoryIndex = -1;
+				savedInput = '';
 			}
+
 			if (userInput === Commands.Clear) {
 				outputHistory.length = 0;
 			}
 			userInput = '';
+			commandHelper.set('');
+		} else if (event.key === 'ArrowUp') {
+			event.preventDefault();
+			if (commandHistory.length === 0) return;
+			let newIndex;
+			if (currentHistoryIndex === -1) {
+				savedInput = userInput;
+				newIndex = commandHistory.length - 1;
+			} else {
+				newIndex = Math.max(currentHistoryIndex - 1, 0);
+			}
+			currentHistoryIndex = newIndex;
+			userInput = commandHistory[newIndex];
+		} else if (event.key === 'ArrowDown') {
+			event.preventDefault();
+			if (currentHistoryIndex === -1) return;
+			let newIndex = currentHistoryIndex + 1;
+			if (newIndex >= commandHistory.length) {
+				userInput = savedInput;
+				savedInput = '';
+				currentHistoryIndex = -1;
+			} else {
+				currentHistoryIndex = newIndex;
+				userInput = commandHistory[newIndex];
+			}
 		} else if (event.key.length === 1 && !event.ctrlKey && !event.metaKey) {
 			userInput += event.key;
 		}
@@ -44,7 +97,12 @@
 
 {#if !isLoading}
 	<div class="text-text p-4 font-mono">
-		<main class="border-primary h-[calc(100svh-2rem)] border-4 border-solid p-4 overflow-y-auto overflow-x-clip text-wrap">
+		<main
+			class="border-primary [&::-webkit-scrollbar-thumb]:bg-subtle h-[calc(100svh-6rem)] overflow-x-clip overflow-y-auto border-4 border-solid
+			p-4
+  	      [&::-webkit-scrollbar]:w-[1ch]
+            [&::-webkit-scrollbar-track]:bg-none"
+		>
 			<div
 				role="button"
 				tabindex="0"
@@ -56,7 +114,7 @@
 						inputContainer?.focus();
 					}
 				}}
-				class="flex w-full flex-col items-start h-full"
+				class="flex h-full w-full flex-col items-start"
 			>
 				<p>
 					César Rentería {lang.dateLabel(new Date().toLocaleDateString(baseLanguage))}
@@ -64,12 +122,12 @@
 				<p>{lang.helpText}</p>
 				<br />
 
-				<div>
+				<div class="max-w-full">
 					{#each outputHistory as line, i}
 						{#if line.charAt(0) == '$' && i !== 0}
 							<br />
 						{/if}
-						<p class="whitespace-pre text-wrap">{@html line}</p>
+						<p class="break-words whitespace-pre-wrap">{@html line}</p>
 					{/each}
 					{#if outputHistory.length !== 0}
 						<br />
@@ -85,7 +143,7 @@
 						onfocus={handleFocus}
 						onblur={handleBlur}
 						bind:this={inputContainer}
-						class="inline-flex items-center focus:outline-none pb-4"
+						class="inline-flex items-center pb-4 focus:outline-none"
 					>
 						<span class="mr-[1ch]">$</span>
 						<span class="input-content whitespace-pre">

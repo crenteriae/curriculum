@@ -10,6 +10,8 @@
   --font-mono: IBM Plex Mono, monospace;
   --color-text: #efe2e0;
   --color-bg: #1e1e1e;
+  --color-subtle: #3a3a3a;
   --color-primary: #8da691;
   --color-secondary: #709289;
+  --color-highlight: #f9d25b;
 }
