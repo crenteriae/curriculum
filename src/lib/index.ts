@@ -1,8 +1,4 @@
 import { translations as t, baseLanguage } from './localization';
-import { Glob } from "bun";
-
-const glob = new Glob("*");
-
 // place files you want to import through the `$lib` alias in this folder.
 
 export enum Commands {
@@ -13,7 +9,7 @@ export enum Commands {
 	Music = 'music'
 }
 
-type CommandHandler = (args: string[]) => string;
+type CommandHandler = (args: string[]) => string | Promise<string>;
 
 const commands: Record<string, CommandHandler> = {
 	help: () => Object.values(Commands).join('\n'),
@@ -21,13 +17,13 @@ const commands: Record<string, CommandHandler> = {
 	contact: () =>
 		'Email: <a href=mailto:crenteriaejr@gmail.com>crenteriaejr@gmail.com</a>\nLinkedIn: <a href="https://www.linkedin.com/in/césar-rentería-861848285/" target="_blank">https://www.linkedin.com/in/césar-rentería-861848285/</a>',
 	cls: () => '', // Clears the screen
-	music: (args: string[]) => t[baseLanguage].music(args)
+	music: async (args: string[]) => await t[baseLanguage].music(args)
 };
 
-export function handleCommand(command: string): string {
+export async function handleCommand(command: string): Promise<string> {
 	const [cmd, ...args] = command.trim().split(/\s+/);
 	if (cmd in commands) {
-		return commands[cmd](args);
+		return await commands[cmd](args);
 	} else {
 		return t[baseLanguage].cmdNotFound(cmd);
 	}

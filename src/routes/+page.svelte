@@ -9,14 +9,14 @@
 	let inputContainer = $state<HTMLElement | null>(null);
 	let outputHistory = $state<string[]>([]); // Store command results
 
-	const handleInput = (event: KeyboardEvent) => {
+	const handleInput = async (event: KeyboardEvent) => {
 		if (event.key === 'Backspace') {
 			event.preventDefault();
 			userInput = userInput.slice(0, -1);
 		} else if (event.key === 'Enter') {
 			event.preventDefault();
 			if (userInput.trim() !== '') {
-				outputHistory = [...outputHistory, `$ ${userInput}`, handleCommand(userInput)];
+				outputHistory = [...outputHistory, `$ ${userInput}`, await handleCommand(userInput)];
 			}
 			if (userInput === Commands.Clear) {
 				outputHistory.length = 0;
@@ -44,7 +44,7 @@
 
 {#if !isLoading}
 	<div class="text-text p-4 font-mono">
-		<main class="border-primary h-[calc(100svh-2rem)] border-4 border-solid p-4">
+		<main class="border-primary h-[calc(100svh-2rem)] border-4 border-solid p-4 overflow-y-auto overflow-x-clip text-wrap">
 			<div
 				role="button"
 				tabindex="0"
@@ -69,7 +69,7 @@
 						{#if line.charAt(0) == '$' && i !== 0}
 							<br />
 						{/if}
-						<p class="whitespace-pre">{@html line}</p>
+						<p class="whitespace-pre text-wrap">{@html line}</p>
 					{/each}
 					{#if outputHistory.length !== 0}
 						<br />
@@ -85,7 +85,7 @@
 						onfocus={handleFocus}
 						onblur={handleBlur}
 						bind:this={inputContainer}
-						class="inline-flex cursor-text items-center focus:outline-none"
+						class="inline-flex items-center focus:outline-none pb-4"
 					>
 						<span class="mr-[1ch]">$</span>
 						<span class="input-content whitespace-pre">
