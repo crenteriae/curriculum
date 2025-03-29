@@ -37,7 +37,8 @@ const commands: Record<string, CommandHandler> = {
  \\   /_ || \\_
   \\____)|_) \\_)
 `,
-	music: async (args: string[]) => await t[baseLanguage].music(args)
+	music: async (args: string[]) => await t[baseLanguage].music(args),
+	ls: () => "Can't do that here, silly."
 };
 
 export async function handleCommand(command: string): Promise<string> {

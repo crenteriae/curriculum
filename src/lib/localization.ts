@@ -54,6 +54,7 @@ export const translations: Record<
 		about: string;
 		cmdNotFound: (cmd: string) => string;
 		music: (args: string[]) => string | Promise<string>;
+		ls: string;
 	}
 > = {
 	es: {
@@ -70,7 +71,7 @@ export const translations: Record<
 				return 'Reproducción detenida.';
 			}
 			if (args.length > 0) {
-				return `Argumento "${args[0]}" desconocido`;
+				return `Argumento "${args[0]}" desconocido.`;
 			}
 
 			if (!song) {
@@ -84,7 +85,8 @@ export const translations: Record<
 			audioElement.play();
 
 			return `Ahora escuchando: ${song.title} | ${song.composer}${song.performer ? ` | Intepretado por ${song.performer}` : ''}${song.credit ? ` | Crédito para ${song.credit}` : ''}. Escribe music --stop para detener la reproducción.`;
-		}
+		},
+		ls: "Aquí no puedes hacer eso, tontis."
 	},
 	en: {
 		helpText: "Please type 'help' to see available commands.",
@@ -99,7 +101,7 @@ export const translations: Record<
 				return 'Playback stopped.';
 			}
 			if (args.length > 0) {
-				return `Unknown argument "${args[0]}"`;
+				return `Unknown argument "${args[0]}".`;
 			}
 			if (!song) {
 				return 'An unexpected error occured.';
@@ -112,6 +114,7 @@ export const translations: Record<
 			audioElement.play();
 
 			return `Now playing: ${song.title} | ${song.composer}${song.performer ? ` | Performed by ${song.performer}` : ''}${song.credit ? ` | Credit to ${song.credit}` : ''}. Type music --stop to cease playback.`;
-		}
+		},
+		ls: "Can't do that here, silly."
 	}
 } as const;
