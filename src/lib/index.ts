@@ -6,7 +6,8 @@ export enum Commands {
 	About = 'about',
 	Contact = 'contact',
 	Clear = 'cls',
-	Music = 'music'
+	Music = 'music',
+	Cat = 'cat'
 }
 
 type CommandHandler = (args: string[]) => string | Promise<string>;
@@ -16,7 +17,26 @@ const commands: Record<string, CommandHandler> = {
 	about: () => t[baseLanguage].about,
 	contact: () =>
 		'Email: <a href=mailto:crenteriaejr@gmail.com>crenteriaejr@gmail.com</a>\nLinkedIn: <a href="https://www.linkedin.com/in/césar-rentería-861848285/" target="_blank">https://www.linkedin.com/in/césar-rentería-861848285/</a>\nGitHub: <a href="https://github.com/crenteriae" target="_blank">https://github.com/crenteriae</a>',
-	cls: () => '', // Clears the screen
+	cls: () => '',
+	cat: () =>
+		` .       .
+ |\\_---_/|
+/   o_o   \\
+|    U    |
+\\  ._I_.  /
+ \`-_____-'`,
+	dog: () =>
+		`         __
+        /  \\
+       / ..|\\
+      (_\\  |_)
+      /  \\@'
+     /     \\
+ _  /  \`   |
+\\\/  \\  | _\\
+ \\   /_ || \\_
+  \\____)|_) \\_)
+`,
 	music: async (args: string[]) => await t[baseLanguage].music(args)
 };
 
