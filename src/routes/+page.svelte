@@ -2,6 +2,7 @@
 	import { Commands, handleCommand } from '$lib';
 	import { translations as t, baseLanguage } from '$lib/localization';
 	import { commandHelper } from '$lib/store';
+	import { tick } from 'svelte';
 
 	let lang = $state({ helpText: '', dateLabel: (date: string) => date });
 	let isLoading = $state(true);
@@ -38,9 +39,12 @@
 			userInput = userInput.slice(0, -1);
 		} else if (event.key === 'Enter') {
 			event.preventDefault();
+
 			if (userInput.trim() !== '') {
 				const command = userInput.trim();
 				outputHistory = [...outputHistory, `$ ${command}`, await handleCommand(command)];
+				await tick();
+				inputContainer?.scrollIntoView({ behavior: 'smooth' });
 				commandHistory = [...commandHistory, command];
 				currentHistoryIndex = -1;
 				savedInput = '';
@@ -100,7 +104,7 @@
 		<main
 			class="border-primary [&::-webkit-scrollbar-thumb]:bg-subtle h-[calc(100svh-6rem)] overflow-x-clip overflow-y-auto border-4 border-solid
 			p-4
-  	      [&::-webkit-scrollbar]:w-[1ch]
+  	      	[&::-webkit-scrollbar]:w-[1ch]
             [&::-webkit-scrollbar-track]:bg-none"
 		>
 			<div
