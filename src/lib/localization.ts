@@ -1,3 +1,5 @@
+import { downloadCv } from './tools';
+
 const musicFiles = import.meta.glob('/static/music/*');
 const songs: Record<
 	string,
@@ -55,6 +57,7 @@ export const translations: Record<
 		cmdNotFound: (cmd: string) => string;
 		music: (args: string[]) => string | Promise<string>;
 		ls: string;
+		cv: () => string;
 	}
 > = {
 	es: {
@@ -86,7 +89,11 @@ export const translations: Record<
 
 			return `Ahora escuchando: ${song.title} | ${song.composer}${song.performer ? ` | Intepretado por ${song.performer}` : ''}${song.credit ? ` | Crédito para ${song.credit}` : ''}. Escribe music --stop para detener la reproducción.`;
 		},
-		ls: "Aquí no puedes hacer eso, tontis."
+		ls: 'Aquí no puedes hacer eso, tontis.',
+		cv: () => {
+			downloadCv();
+			return 'Descargado.';
+		}
 	},
 	en: {
 		helpText: "Please type 'help' to see available commands.",
@@ -115,6 +122,11 @@ export const translations: Record<
 
 			return `Now playing: ${song.title} | ${song.composer}${song.performer ? ` | Performed by ${song.performer}` : ''}${song.credit ? ` | Credit to ${song.credit}` : ''}. Type music --stop to cease playback.`;
 		},
-		ls: "Can't do that here, silly."
+		ls: "Can't do that here, silly.",
+		cv: () => {
+			downloadCv();
+
+			return 'Downloaded.';
+		}
 	}
 } as const;

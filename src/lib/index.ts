@@ -7,7 +7,8 @@ export enum Commands {
 	Contact = 'contact',
 	Clear = 'cls',
 	Music = 'music',
-	Cat = 'cat'
+	Cat = 'cat',
+	Cv = 'cv'
 }
 
 type CommandHandler = (args: string[]) => string | Promise<string>;
@@ -38,7 +39,8 @@ const commands: Record<string, CommandHandler> = {
   \\____)|_) \\_)
 `,
 	music: async (args: string[]) => await t[baseLanguage].music(args),
-	ls: () => "Can't do that here, silly."
+	ls: () => t[baseLanguage].ls,
+	cv: () => t[baseLanguage].cv()
 };
 
 export async function handleCommand(command: string): Promise<string> {
