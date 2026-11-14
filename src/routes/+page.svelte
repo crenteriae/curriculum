@@ -147,13 +147,15 @@
 								{#each line.segments as segment, j (j)}
 									{#if typeof segment === 'string'}
 										{segment}
-									{:else}
+									{:else if 'href' in segment}
 										<a
 											href={segment.href}
 											rel="external"
 											target={segment.newTab ? '_blank' : undefined}
 											class={segment.class}>{segment.label}</a
 										>
+									{:else}
+										<span class={segment.class}>{segment.text}</span>
 									{/if}
 								{/each}
 							</p>

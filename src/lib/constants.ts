@@ -37,3 +37,13 @@ export const songs: Record<
 			]
 		}
 };
+
+export const asciiLinuxPenguin = [
+	'        .--.',
+	'       |o_o |',
+	'       |:_/ |',
+	'      //   \\ \\',
+	'     (|     | )',
+	"    /'\\_   _/`\\",
+	'    \\___)=(___/'
+];

@@ -18,3 +18,13 @@ export function replaceSpotify(raw: string): Segment[] {
 	if (parts[1]) segments.push(parts[1]);
 	return segments;
 }
+
+export function browserName(): string {
+	if (typeof navigator === 'undefined') return 'Unknown';
+	const ua = navigator.userAgent;
+	if (ua.includes('Edg/')) return 'Edge';
+	if (ua.includes('Chrome/')) return 'Chrome';
+	if (ua.includes('Firefox/')) return 'Firefox';
+	if (ua.includes('Safari/')) return 'Safari';
+	return 'Unknown';
+}
