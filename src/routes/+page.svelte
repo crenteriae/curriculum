@@ -9,6 +9,7 @@
 	let lang = $state({ helpText: '', dateLabel: (date: string) => date });
 	let isLoading = $state(true);
 	let userInput = $state('');
+	let caret = $state(0);
 	let inputContainer = $state<HTMLInputElement | null>(null);
 	let outputHistory = $state<
 		({ kind: 'input'; text: string } | { kind: 'output'; segments: Segment[] })[]
@@ -39,6 +40,7 @@
 	});
 	const handleInput = async (event: KeyboardEvent) => {
 		if (event.key === 'Backspace') {
+			requestAnimationFrame(syncCaret);
 			return;
 		} else if (event.key === 'Enter') {
 			event.preventDefault();
@@ -87,14 +89,20 @@
 				setInput(commandHistory[newIndex]);
 			}
 		}
+		requestAnimationFrame(syncCaret);
 	};
 
-	const setInput = (value: string, caret = value.length) => {
+	const setInput = (value: string, caretPos = value.length) => {
 		userInput = value;
+		caret = caretPos;
 		if (inputContainer) {
 			inputContainer.value = value;
-			inputContainer.setSelectionRange(caret, caret);
+			inputContainer.setSelectionRange(caretPos, caretPos);
 		}
+	};
+
+	const syncCaret = () => {
+		if (inputContainer) caret = inputContainer.selectionStart ?? userInput.length;
 	};
 
 	$effect(() => {
@@ -170,23 +178,40 @@
 
 				<div class="terminal-input inline-flex items-center pb-4">
 					<span class="mr-[1ch]">$</span>
-					<input
-						type="text"
-						aria-label="Terminal input"
-						inputmode="text"
-						enterkeyhint="send"
-						autocapitalize="none"
-						autocomplete="off"
-						autocorrect="off"
-						spellcheck="false"
-						onkeydown={handleInput}
-						oninput={(event) => {
-							userInput = event.currentTarget.value;
-						}}
-						bind:this={inputContainer}
-						style="width: {Math.max(1, userInput.length + 1)}ch; caret-color: currentColor;"
-						class="font-inherit bg-transparent p-0 text-inherit focus:outline-none"
-					/>
+					<div class="relative">
+						<input
+							type="text"
+							aria-label="Terminal input"
+							inputmode="text"
+							enterkeyhint="send"
+							autocapitalize="none"
+							autocomplete="off"
+							autocorrect="off"
+							spellcheck="false"
+							onkeydown={handleInput}
+							oninput={(event) => {
+								userInput = event.currentTarget.value;
+								syncCaret();
+							}}
+							onkeyup={syncCaret}
+							onclick={syncCaret}
+							onfocus={syncCaret}
+							bind:this={inputContainer}
+							style="width: {Math.max(1, userInput.length + 1)}ch; caret-color: transparent;"
+							class="font-inherit bg-transparent p-0 text-transparent focus:outline-none"
+						/>
+						<span
+							class="text-text pointer-events-none absolute top-0 left-0 whitespace-pre"
+							aria-hidden="true"
+						>
+							{userInput}
+						</span>
+						<span
+							class="blinking-cursor text-text pointer-events-none absolute top-0"
+							style="left: {caret}ch;"
+							aria-hidden="true">_</span
+						>
+					</div>
 				</div>
 			</div>
 		</main>
