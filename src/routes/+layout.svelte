@@ -8,9 +8,16 @@
 	const lang = $derived(t[data.lang]);
 	const navItems = $derived([
 		{ label: lang.nav.about, command: 'about' },
+		{ label: lang.nav.experience, command: 'experience all' },
+		{ label: lang.nav.skills, command: 'skills all' },
 		{ label: lang.nav.contact, command: 'contact' },
-		{ label: lang.nav.music, command: 'music' }
+		{ label: lang.nav.music, command: 'music' },
+		{ label: lang.nav.cv, command: 'cv' }
 	]);
+
+	$effect(() => {
+		document.documentElement.lang = data.lang;
+	});
 </script>
 
 <svelte:head>

@@ -7,6 +7,7 @@ import { cv } from './cv';
 import { dog } from './dog';
 import { experience } from './experience';
 import { help } from './help';
+import { lang } from './lang';
 import { ls } from './ls';
 import { music } from './music';
 import { neofetch } from './neofetch';
@@ -18,6 +19,7 @@ export const commands: Record<string, CommandHandler> = {
 	about,
 	contact,
 	cls,
+	clear: cls,
 	music,
 	cat,
 	cv,
@@ -28,5 +30,6 @@ export const commands: Record<string, CommandHandler> = {
 	fastfetch: neofetch,
 	cowsay,
 	dog,
-	ls
+	ls,
+	lang
 };

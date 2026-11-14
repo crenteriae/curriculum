@@ -10,7 +10,14 @@ export const translations = {
 		description: aboutEsRaw.replace('{{spotify}}', 'Spotify').trim(),
 		helpText: "Por favor escribe 'help' para ver los comandos disponibles.",
 		dateLabel: (date: string) => `[${date}]`,
-		nav: { about: 'Acerca de', contact: 'Contacto', music: 'Música' },
+		nav: {
+			about: 'Acerca de',
+			experience: 'Experiencia',
+			skills: 'Habilidades',
+			contact: 'Contacto',
+			music: 'Música',
+			cv: 'CV'
+		},
 		about: replaceSpotify(aboutEsRaw),
 		contact: {
 			email: 'Correo: ',
@@ -39,6 +46,10 @@ export const translations = {
 			creditTo: ' | Crédito para ',
 			stopHint: '. Escribe music --stop para detener la reproducción.'
 		},
+		language: {
+			usage: 'Uso: lang es|en.',
+			changed: 'Idioma cambiado a español.'
+		},
 		ls: 'Aquí no puedes hacer eso, tontis.',
 		cvDownloaded: 'Descargado.'
 	},
@@ -47,7 +58,14 @@ export const translations = {
 		description: aboutEnRaw.replace('{{spotify}}', 'Spotify').trim(),
 		helpText: "Please type 'help' to see available commands.",
 		dateLabel: (date: string) => `[${date}]`,
-		nav: { about: 'About', contact: 'Contact', music: 'Music' },
+		nav: {
+			about: 'About',
+			experience: 'Experience',
+			skills: 'Skills',
+			contact: 'Contact',
+			music: 'Music',
+			cv: 'CV'
+		},
 		about: replaceSpotify(aboutEnRaw),
 		contact: {
 			email: 'Email: ',
@@ -74,6 +92,10 @@ export const translations = {
 			performedBy: ' | Performed by ',
 			creditTo: ' | Credit to ',
 			stopHint: '. Type music --stop to cease playback.'
+		},
+		language: {
+			usage: 'Usage: lang es|en.',
+			changed: 'Language switched to English.'
 		},
 		ls: "Can't do that here, silly.",
 		cvDownloaded: 'Downloaded.'

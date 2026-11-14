@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Commands, handleCommand, parseCommand } from '#lib';
+	import { commandCompletions, handleCommand, parseCommand } from '#lib';
 	import { translations as t } from '#lib/content.ts';
 	import type { Segment } from '#lib/output.ts';
 	import { commandHelper } from '#lib/store.svelte.ts';
@@ -18,6 +18,8 @@
 	let commandHistory = $state<string[]>([]);
 	let currentHistoryIndex = $state(-1);
 	let savedInput = $state('');
+	let completions = $state<string[]>([]);
+	let completionIndex = $state(0);
 
 	$effect(() => {
 		let cmd = commandHelper.value;
@@ -25,6 +27,13 @@
 		let index = 0;
 
 		userInput = '';
+
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			setInput(cmd);
+			handleInput(new KeyboardEvent('keydown', { key: 'Enter' }));
+			inputContainer?.focus();
+			return;
+		}
 
 		const interval = setInterval(() => {
 			if (index < cmd.length) {
@@ -40,6 +49,32 @@
 		return () => clearInterval(interval);
 	});
 	const handleInput = async (event: KeyboardEvent) => {
+		const key = event.key.toLowerCase();
+		if (event.key !== 'Tab') completions = [];
+		if (event.ctrlKey && key === 'l') {
+			event.preventDefault();
+			outputHistory = [];
+			return;
+		}
+		if (event.ctrlKey && key === 'c') {
+			event.preventDefault();
+			commandHelper.value = '';
+			setInput('');
+			currentHistoryIndex = -1;
+			savedInput = '';
+			return;
+		}
+		if (event.key === 'Tab') {
+			event.preventDefault();
+			if (completions.length === 0) {
+				completions = commandCompletions(userInput);
+				completionIndex = 0;
+			} else {
+				completionIndex = (completionIndex + 1) % completions.length;
+			}
+			if (completions.length > 0) setInput(completions[completionIndex]);
+			return;
+		}
 		if (event.key === 'Backspace') {
 			requestAnimationFrame(syncCaret);
 			return;
@@ -48,7 +83,7 @@
 
 			if (userInput.trim() !== '') {
 				const command = userInput.trim();
-				if (parseCommand(command).cmd === Commands.Clear) {
+				if (['cls', 'clear'].includes(parseCommand(command).cmd)) {
 					outputHistory = [];
 				} else {
 					outputHistory = [
@@ -57,7 +92,11 @@
 						{ kind: 'output', segments: await handleCommand(command, data.lang) }
 					];
 					await tick();
-					inputContainer?.scrollIntoView({ behavior: 'smooth' });
+					inputContainer?.scrollIntoView({
+						behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+							? 'auto'
+							: 'smooth'
+					});
 				}
 				commandHistory = [...commandHistory, command];
 				currentHistoryIndex = -1;
@@ -119,20 +158,9 @@
 		[&::-webkit-scrollbar]:w-[1ch]
 		[&::-webkit-scrollbar-track]:bg-none"
 	>
-		<div
-			role="button"
-			tabindex="0"
-			aria-label="Terminal window"
-			onclick={() => inputContainer?.focus()}
-			onkeydown={(event) => {
-				if (event.target === inputContainer) return;
-				if (event.key === 'Enter' || event.key === ' ') {
-					event.preventDefault();
-					inputContainer?.focus();
-				}
-			}}
-			class="flex h-full w-full flex-col items-start"
-		>
+		<!-- Click-to-focus is a convenience; keyboard users can use the labelled input directly. -->
+		<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+		<div onclick={() => inputContainer?.focus()} class="flex h-full w-full flex-col items-start">
 			<p>
 				César Rentería {today ? lang.dateLabel(today) : ''}
 			</p>
@@ -226,5 +254,11 @@
 
 	.terminal-input {
 		min-width: 20ch;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.blinking-cursor {
+			animation: none;
+		}
 	}
 </style>

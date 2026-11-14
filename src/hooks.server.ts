@@ -1,8 +1,11 @@
 import type { Handle } from '@sveltejs/kit/hooks';
-import { detectLanguage } from '#lib/localization.ts';
+import { detectLanguage, isLanguage } from '#lib/localization.ts';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	const lang = detectLanguage(event.request.headers.get('accept-language'));
+	const savedLanguage = event.cookies.get('lang') ?? '';
+	const lang = isLanguage(savedLanguage)
+		? savedLanguage
+		: detectLanguage(event.request.headers.get('accept-language'));
 	event.locals.lang = lang;
 
 	return resolve(event, {

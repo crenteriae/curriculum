@@ -24,9 +24,10 @@ export const skills: CommandHandler = (args, lang) => {
 	if (!arg) return labels.usage(skillCategories) + '\n';
 	if (arg === 'all') {
 		const segments: Segment[] = [];
-		for (const [name, items] of Object.entries(skillGroups)) {
+		const entries = Object.entries(skillGroups);
+		for (const [index, [name, items]] of entries.entries()) {
 			segments.push(...renderSkillCategory(name, items));
-			segments.push('\n');
+			if (index < entries.length - 1) segments.push('\n');
 		}
 		return segments;
 	}

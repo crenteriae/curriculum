@@ -14,5 +14,6 @@ export enum Commands {
 	Experience = 'experience',
 	Skills = 'skills',
 	Neofetch = 'neofetch',
-	Cowsay = 'cowsay'
+	Cowsay = 'cowsay',
+	Lang = 'lang'
 }

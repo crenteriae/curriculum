@@ -3,7 +3,7 @@ export type Language = 'es' | 'en';
 const supportedLanguages: readonly Language[] = ['es', 'en'];
 const fallbackLanguage: Language = 'es';
 
-function isSupported(value: string): value is Language {
+export function isLanguage(value: string): value is Language {
 	return (supportedLanguages as readonly string[]).includes(value);
 }
 
@@ -20,6 +20,6 @@ export function detectLanguage(acceptLanguage: string | null): Language {
 		.sort((a, b) => b.q - a.q);
 
 	return (
-		(preferred.find((p) => isSupported(p.base))?.base as Language | undefined) ?? fallbackLanguage
+		(preferred.find((p) => isLanguage(p.base))?.base as Language | undefined) ?? fallbackLanguage
 	);
 }

@@ -41,7 +41,10 @@ export const experience: CommandHandler = (args, lang) => {
 		];
 	}
 	if (arg === 'all') {
-		return roles.flatMap((role) => [...renderRole(role), '\n']);
+		return roles.flatMap((role, index) => [
+			...renderRole(role),
+			...(index < roles.length - 1 ? ['\n'] : [])
+		]);
 	}
 	const index = parseInt(arg, 10);
 	const role = !isNaN(index)
