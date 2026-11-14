@@ -9,7 +9,7 @@
 	let isLoading = $state(true);
 	let userInput = $state('');
 	let showCursor = $state(true);
-	let inputContainer = $state<HTMLElement | null>(null);
+	let inputContainer = $state<HTMLInputElement | null>(null);
 	let outputHistory = $state<
 		({ kind: 'input'; text: string } | { kind: 'output'; segments: Segment[] })[]
 	>([]);
@@ -38,8 +38,8 @@
 	});
 	const handleInput = async (event: KeyboardEvent) => {
 		if (event.key === 'Backspace') {
-			event.preventDefault();
-			userInput = userInput.slice(0, -1);
+			// Let the native input handle deletion; nothing to do.
+			return;
 		} else if (event.key === 'Enter') {
 			event.preventDefault();
 
@@ -86,9 +86,8 @@
 				currentHistoryIndex = newIndex;
 				userInput = commandHistory[newIndex];
 			}
-		} else if (event.key.length === 1 && !event.ctrlKey && !event.metaKey) {
-			userInput += event.key;
 		}
+		// All other keys (including printable characters) are handled natively by the input.
 	};
 
 	const handleFocus = () => (showCursor = true);
@@ -111,7 +110,7 @@
 		<main
 			class="border-primary [&::-webkit-scrollbar-thumb]:bg-subtle h-[calc(100svh-6rem)] overflow-x-clip overflow-y-auto border-4 border-solid
 			p-4
-  	      	[&::-webkit-scrollbar]:w-[1ch]
+  	     	[&::-webkit-scrollbar]:w-[1ch]
             [&::-webkit-scrollbar-track]:bg-none"
 		>
 			<div
@@ -162,23 +161,27 @@
 					{/if}
 				</div>
 
-				<div class="terminal-input contents">
-					<div
-						role="textbox"
-						tabindex="0"
+				<div class="terminal-input inline-flex items-center pb-4">
+					<span class="mr-[1ch]">$</span>
+					<input
+						type="text"
 						aria-label="Terminal input"
+						inputmode="text"
+						autocapitalize="none"
+						autocomplete="off"
+						autocorrect="off"
+						spellcheck="false"
 						onkeydown={handleInput}
 						onfocus={handleFocus}
 						onblur={handleBlur}
 						bind:this={inputContainer}
-						class="inline-flex items-center pb-4 focus:outline-none"
+						bind:value={userInput}
+						style="width: {Math.max(1, userInput.length + 1)}ch; caret-color: transparent;"
+						class="font-inherit bg-transparent p-0 text-inherit focus:outline-none"
+					/>
+					<span class="blinking-cursor pointer-events-none -ml-[1ch]" class:invisible={!showCursor}
+						>_</span
 					>
-						<span class="mr-[1ch]">$</span>
-						<span class="input-content whitespace-pre">
-							{userInput}
-							<span class="blinking-cursor -ml-[1ch]" class:invisible={!showCursor}>_</span>
-						</span>
-					</div>
 				</div>
 			</div>
 		</main>
