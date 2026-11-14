@@ -20,6 +20,7 @@
 
 	$effect(() => {
 		let cmd = $commandHelper;
+		if (!cmd) return;
 		let index = 0;
 
 		userInput = '';
@@ -59,7 +60,7 @@
 			}
 
 			if (userInput === Commands.Clear) {
-				outputHistory.length = 0;
+				outputHistory = [];
 			}
 			userInput = '';
 			commandHelper.set('');
@@ -134,7 +135,7 @@
 				<p>{lang.helpText}</p>
 				<br />
 
-				<div class="max-w-full">
+				<div class="max-w-full" role="log" aria-live="polite" aria-atomic="false">
 					{#each outputHistory as line, i (i)}
 						{#if line.kind === 'input'}
 							{#if i !== 0}
@@ -169,6 +170,7 @@
 						type="text"
 						aria-label="Terminal input"
 						inputmode="text"
+						enterkeyhint="send"
 						autocapitalize="none"
 						autocomplete="off"
 						autocorrect="off"

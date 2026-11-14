@@ -1,6 +1,11 @@
 <script lang="ts">
 	import '../app.css';
 	import { commandHelper } from '#lib/store.ts';
+	import { baseLanguage } from '#lib/localization.ts';
+
+	$effect(() => {
+		document.documentElement.lang = baseLanguage;
+	});
 
 	let { children } = $props();
 </script>
