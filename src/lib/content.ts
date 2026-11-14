@@ -39,50 +39,66 @@ const skillsEs = JSON.parse(skillsEsRaw) as typeof skillsEn;
 const aboutEn = replaceSpotify(aboutEnRaw);
 const aboutEs = replaceSpotify(aboutEsRaw);
 
+function renderSkillCategory(name: string, items: { name: string; level: number }[]): Segment[] {
+	const bars = (level: number) => '█'.repeat(level) + '░'.repeat(10 - level);
+	const segments: Segment[] = [{ text: name.toUpperCase() + '\n', class: 'text-primary' }];
+	for (const s of items) {
+		segments.push({ text: s.name.padEnd(18) + ' ', class: 'text-secondary' });
+		segments.push({ text: `${bars(s.level)} ${s.level}/10\n`, class: 'text-text' });
+	}
+	return segments;
+}
+
 function skillsInteractive(
 	args: string[],
 	groups: Record<string, { name: string; level: number }[]>,
 	labels: { usage: string; notFound: string }
-): string {
-	const bars = (level: number) => '█'.repeat(level) + '░'.repeat(10 - level);
-	const render = (name: string, items: { name: string; level: number }[]) =>
-		name.toUpperCase() +
-		'\n' +
-		items.map((s) => `${s.name.padEnd(18)} ${bars(s.level)} ${s.level}/10`).join('\n');
+): Segment[] {
 	const arg = (args[0] || '').toLowerCase();
-	if (!arg) return labels.usage;
+	if (!arg) return [{ text: labels.usage + '\n', class: 'text-text' }];
 	if (arg === 'all') {
-		return Object.entries(groups)
-			.map(([k, v]) => render(k, v))
-			.join('\n\n');
+		const segments: Segment[] = [];
+		for (const [k, v] of Object.entries(groups)) {
+			segments.push(...renderSkillCategory(k, v));
+			segments.push({ text: '\n', class: 'text-text' });
+		}
+		return segments;
 	}
 	if (arg in groups) {
-		return render(arg, groups[arg]);
+		return renderSkillCategory(arg, groups[arg]);
 	}
-	return labels.notFound.replace('{arg}', arg);
+	return [{ text: labels.notFound.replace('{arg}', arg) + '\n', class: 'text-text' }];
 }
 
 function experienceInteractive(
 	args: string[],
 	roles: typeof experienceEn,
 	labels: { header: string; notFound: string }
-): string {
+): Segment[] {
 	const arg = (args[0] || '').toLowerCase();
 	if (!arg) {
-		return (
-			labels.header +
-			'\n' +
-			roles.map((r, i) => `${i + 1}. ${r.title} — ${r.company} (${r.dates})`).join('\n')
-		);
+		const segments: Segment[] = [{ text: labels.header + '\n', class: 'text-highlight' }];
+		for (const [i, r] of roles.entries()) {
+			segments.push({
+				text: `${i + 1}. ${r.title} — ${r.company} (${r.dates})\n`,
+				class: 'text-text'
+			});
+		}
+		return segments;
 	}
 	if (arg === 'all') {
-		return roles
-			.map(
-				(r) =>
-					`${r.title} — ${r.company} (${r.dates}, ${r.loc})\n` +
-					r.highlights.map((h) => `  • ${h}`).join('\n')
-			)
-			.join('\n\n');
+		const segments: Segment[] = [];
+		for (const r of roles) {
+			segments.push({
+				text: `${r.title} — ${r.company} (${r.dates}, ${r.loc})\n`,
+				class: 'text-highlight'
+			});
+			for (const h of r.highlights) {
+				segments.push({ text: `  • ${h}\n`, class: 'text-text' });
+			}
+			segments.push({ text: '\n', class: 'text-text' });
+		}
+		return segments;
 	}
 	const idx = parseInt(arg, 10);
 	const role = !isNaN(idx)
@@ -91,12 +107,23 @@ function experienceInteractive(
 				(r) => r.company.toLowerCase().includes(arg) || r.title.toLowerCase().includes(arg)
 			);
 	if (!role) {
-		return labels.notFound.replace('{arg}', arg).replace('{n}', String(roles.length));
+		return [
+			{
+				text: labels.notFound.replace('{arg}', arg).replace('{n}', String(roles.length)) + '\n',
+				class: 'text-text'
+			}
+		];
 	}
-	return (
-		`${role.title} — ${role.company} (${role.dates}, ${role.loc})\n` +
-		role.highlights.map((h) => `  • ${h}`).join('\n')
-	);
+	const segments: Segment[] = [
+		{
+			text: `${role.title} — ${role.company} (${role.dates}, ${role.loc})\n`,
+			class: 'text-highlight'
+		}
+	];
+	for (const h of role.highlights) {
+		segments.push({ text: `  • ${h}\n`, class: 'text-text' });
+	}
+	return segments;
 }
 
 export const translations: Record<

@@ -9,7 +9,6 @@
 	let lang = $state({ helpText: '', dateLabel: (date: string) => date });
 	let isLoading = $state(true);
 	let userInput = $state('');
-	let showCursor = $state(true);
 	let inputContainer = $state<HTMLInputElement | null>(null);
 	let outputHistory = $state<
 		({ kind: 'input'; text: string } | { kind: 'output'; segments: Segment[] })[]
@@ -27,7 +26,7 @@
 
 		const interval = setInterval(() => {
 			if (index < cmd.length) {
-				userInput += cmd.charAt(index);
+				setInput(userInput + cmd.charAt(index));
 				index++;
 			} else {
 				clearInterval(interval);
@@ -40,7 +39,6 @@
 	});
 	const handleInput = async (event: KeyboardEvent) => {
 		if (event.key === 'Backspace') {
-			// Let the native input handle deletion; nothing to do.
 			return;
 		} else if (event.key === 'Enter') {
 			event.preventDefault();
@@ -62,7 +60,7 @@
 			if (userInput === Commands.Clear) {
 				outputHistory = [];
 			}
-			userInput = '';
+			setInput('');
 			commandHelper.set('');
 		} else if (event.key === 'ArrowUp') {
 			event.preventDefault();
@@ -75,25 +73,29 @@
 				newIndex = Math.max(currentHistoryIndex - 1, 0);
 			}
 			currentHistoryIndex = newIndex;
-			userInput = commandHistory[newIndex];
+			setInput(commandHistory[newIndex]);
 		} else if (event.key === 'ArrowDown') {
 			event.preventDefault();
 			if (currentHistoryIndex === -1) return;
 			let newIndex = currentHistoryIndex + 1;
 			if (newIndex >= commandHistory.length) {
-				userInput = savedInput;
+				setInput(savedInput);
 				savedInput = '';
 				currentHistoryIndex = -1;
 			} else {
 				currentHistoryIndex = newIndex;
-				userInput = commandHistory[newIndex];
+				setInput(commandHistory[newIndex]);
 			}
 		}
-		// All other keys (including printable characters) are handled natively by the input.
 	};
 
-	const handleFocus = () => (showCursor = true);
-	const handleBlur = () => (showCursor = false);
+	const setInput = (value: string, caret = value.length) => {
+		userInput = value;
+		if (inputContainer) {
+			inputContainer.value = value;
+			inputContainer.setSelectionRange(caret, caret);
+		}
+	};
 
 	$effect(() => {
 		if (!isLoading && inputContainer) {
@@ -178,16 +180,13 @@
 						autocorrect="off"
 						spellcheck="false"
 						onkeydown={handleInput}
-						onfocus={handleFocus}
-						onblur={handleBlur}
+						oninput={(event) => {
+							userInput = event.currentTarget.value;
+						}}
 						bind:this={inputContainer}
-						bind:value={userInput}
-						style="width: {Math.max(1, userInput.length + 1)}ch; caret-color: transparent;"
+						style="width: {Math.max(1, userInput.length + 1)}ch; caret-color: currentColor;"
 						class="font-inherit bg-transparent p-0 text-inherit focus:outline-none"
 					/>
-					<span class="blinking-cursor pointer-events-none -ml-[1ch]" class:invisible={!showCursor}
-						>_</span
-					>
 				</div>
 			</div>
 		</main>

@@ -90,20 +90,21 @@ const commands: Record<string, CommandHandler> = {
 	help: () => Object.values(Commands).join('\n'),
 	about: () => t[baseLanguage].about,
 	contact: () => [
-		'Email: ',
+		{ text: 'Email: ', class: 'text-secondary' },
 		{ href: 'mailto:crenteriaejr@gmail.com', label: 'crenteriaejr@gmail.com' },
-		'\nPhone: ',
+		{ text: '\nPhone: ', class: 'text-secondary' },
 		{ href: 'tel:+526861475332', label: '+52 686 147 5332' },
-		'\nLocation: Mexicali, B.C.',
-		'\nLinkedIn: ',
+		{ text: '\nLocation: ', class: 'text-secondary' },
+		'Mexicali, B.C.',
+		{ text: '\nLinkedIn: ', class: 'text-secondary' },
 		{
 			href: 'https://www.linkedin.com/in/césar-rentería-861848285/',
 			label: 'https://www.linkedin.com/in/césar-rentería-861848285/',
 			newTab: true
 		},
-		'\nGitHub: ',
+		{ text: '\nGitHub: ', class: 'text-secondary' },
 		{ href: 'https://github.com/crenteriae', label: 'https://github.com/crenteriae', newTab: true },
-		'\nWebsite: ',
+		{ text: '\nWebsite: ', class: 'text-secondary' },
 		{ href: 'https://cesarrenteria.dev', label: 'https://cesarrenteria.dev', newTab: true }
 	],
 	experience: (args: string[]) => t[baseLanguage].experience(args),
