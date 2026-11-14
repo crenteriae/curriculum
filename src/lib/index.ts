@@ -1,5 +1,6 @@
 import { translations as t, baseLanguage } from './localization';
-// place files you want to import through the `$lib` alias in this folder.
+import type { Output, Segment } from './output';
+// place files you want to import through the `#lib` alias in this folder.
 
 export enum Commands {
 	Help = 'help',
@@ -11,13 +12,23 @@ export enum Commands {
 	Cv = 'cv'
 }
 
-type CommandHandler = (args: string[]) => string | Promise<string>;
+type CommandHandler = (args: string[]) => Output | Promise<Output>;
 
 const commands: Record<string, CommandHandler> = {
 	help: () => Object.values(Commands).join('\n'),
 	about: () => t[baseLanguage].about,
-	contact: () =>
-		'Email: <a href=mailto:crenteriaejr@gmail.com>crenteriaejr@gmail.com</a>\nLinkedIn: <a href="https://www.linkedin.com/in/césar-rentería-861848285/" target="_blank">https://www.linkedin.com/in/césar-rentería-861848285/</a>\nGitHub: <a href="https://github.com/crenteriae" target="_blank">https://github.com/crenteriae</a>',
+	contact: () => [
+		'Email: ',
+		{ href: 'mailto:crenteriaejr@gmail.com', label: 'crenteriaejr@gmail.com' },
+		'\nLinkedIn: ',
+		{
+			href: 'https://www.linkedin.com/in/césar-rentería-861848285/',
+			label: 'https://www.linkedin.com/in/césar-rentería-861848285/',
+			newTab: true
+		},
+		'\nGitHub: ',
+		{ href: 'https://github.com/crenteriae', label: 'https://github.com/crenteriae', newTab: true }
+	],
 	cls: () => '',
 	cat: () =>
 		` .       .
@@ -34,7 +45,7 @@ const commands: Record<string, CommandHandler> = {
       /  \\@'
      /     \\
  _  /  \`   |
-\\\/  \\  | _\\
+\\/  \\  | _\\
  \\   /_ || \\_
   \\____)|_) \\_)
 `,
@@ -43,11 +54,8 @@ const commands: Record<string, CommandHandler> = {
 	cv: () => t[baseLanguage].cv()
 };
 
-export async function handleCommand(command: string): Promise<string> {
+export async function handleCommand(command: string): Promise<Segment[]> {
 	const [cmd, ...args] = command.trim().split(/\s+/);
-	if (cmd in commands) {
-		return await commands[cmd](args);
-	} else {
-		return t[baseLanguage].cmdNotFound(cmd);
-	}
+	const output = cmd in commands ? await commands[cmd](args) : t[baseLanguage].cmdNotFound(cmd);
+	return typeof output === 'string' ? [output] : output;
 }

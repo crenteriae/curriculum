@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { Commands, handleCommand } from '$lib';
-	import { translations as t, baseLanguage } from '$lib/localization';
-	import { commandHelper } from '$lib/store';
+	import { Commands, handleCommand } from '#lib';
+	import { translations as t, baseLanguage } from '#lib/localization.ts';
+	import type { Segment } from '#lib/output.ts';
+	import { commandHelper } from '#lib/store.ts';
 	import { tick } from 'svelte';
 
 	let lang = $state({ helpText: '', dateLabel: (date: string) => date });
@@ -9,7 +10,9 @@
 	let userInput = $state('');
 	let showCursor = $state(true);
 	let inputContainer = $state<HTMLElement | null>(null);
-	let outputHistory = $state<string[]>([]);
+	let outputHistory = $state<
+		({ kind: 'input'; text: string } | { kind: 'output'; segments: Segment[] })[]
+	>([]);
 	let commandHistory = $state<string[]>([]);
 	let currentHistoryIndex = $state(-1);
 	let savedInput = $state('');
@@ -42,7 +45,11 @@
 
 			if (userInput.trim() !== '') {
 				const command = userInput.trim();
-				outputHistory = [...outputHistory, `$ ${command}`, await handleCommand(command)];
+				outputHistory = [
+					...outputHistory,
+					{ kind: 'input', text: command },
+					{ kind: 'output', segments: await handleCommand(command) }
+				];
 				await tick();
 				inputContainer?.scrollIntoView({ behavior: 'smooth' });
 				commandHistory = [...commandHistory, command];
@@ -127,11 +134,28 @@
 				<br />
 
 				<div class="max-w-full">
-					{#each outputHistory as line, i}
-						{#if line.charAt(0) == '$' && i !== 0}
-							<br />
+					{#each outputHistory as line, i (i)}
+						{#if line.kind === 'input'}
+							{#if i !== 0}
+								<br />
+							{/if}
+							<p class="break-words whitespace-pre-wrap">$ {line.text}</p>
+						{:else}
+							<p class="break-words whitespace-pre-wrap">
+								{#each line.segments as segment, j (j)}
+									{#if typeof segment === 'string'}
+										{segment}
+									{:else}
+										<a
+											href={segment.href}
+											rel="external"
+											target={segment.newTab ? '_blank' : undefined}
+											class={segment.class}>{segment.label}</a
+										>
+									{/if}
+								{/each}
+							</p>
 						{/if}
-						<p class="break-words whitespace-pre-wrap">{@html line}</p>
 					{/each}
 					{#if outputHistory.length !== 0}
 						<br />

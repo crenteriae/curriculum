@@ -1,6 +1,6 @@
 <script lang="ts">
 	import '../app.css';
-	import { commandHelper } from '$lib/store';
+	import { commandHelper } from '#lib/store.ts';
 
 	let { children } = $props();
 </script>
