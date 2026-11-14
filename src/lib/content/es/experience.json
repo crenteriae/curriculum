@@ -1,0 +1,45 @@
+[
+	{
+		"title": "Software Engineer (P2)",
+		"company": "Trimble Inc. — Xchange Platform",
+		"dates": "May 2026 – Present",
+		"loc": "Mexicali",
+		"highlights": [
+			"Aceleré las acciones masivas de dar timeout a los 30s a terminar en ~1s",
+			"Convertí una herramienta interna en una caracteristica del producto utilizada por clientes",
+			"Rediseñando una tabla de 1.5 mil millones de filas para implementar retencion",
+			"Me encargo de despliegues, monitoreo de releases y revisión de código del equipo"
+		]
+	},
+	{
+		"title": "Software Engineer",
+		"company": "Trimble Inc. — Xchange Platform",
+		"dates": "May 2025 – May 2026",
+		"loc": "Mexicali",
+		"highlights": [
+			"Mantuve servicios basados en eventos funcionando de forma confiable en la nube",
+			"Corregí caídas por memoria en nuestro motor de procesamiento",
+			"Hice una consulta lenta 15x más rápida (30s → 2s)",
+			"Reduje errores de tiempo de espera a servicios externos en 40%"
+		]
+	},
+	{
+		"title": "Software Engineering Intern",
+		"company": "Trimble Inc.",
+		"dates": "Jul 2024 – May 2025",
+		"loc": "Mexicali",
+		"highlights": [
+			"Construí el proceso de off-boarding de clientes de principio a fin, eliminando el trabajo manual"
+		]
+	},
+	{
+		"title": "Software Developer Intern",
+		"company": "Collins Aerospace",
+		"dates": "Sep 2023 – Jul 2024",
+		"loc": "Mexicali",
+		"highlights": [
+			"Construí funcionalidades para apps web de planta de manufactura",
+			"Diseñé la UI y las vistas de base de datos de un sistema de sugerencias de mejora"
+		]
+	}
+]

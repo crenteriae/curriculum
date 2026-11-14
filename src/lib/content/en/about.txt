@@ -1,0 +1,1 @@
+I'm a software engineer focused on backend and distributed systems. Currently Software Engineer (P2) at Trimble, where I work on making super duper sure the platform doesn't explode. Type "experience" or "skills" for further details. I also compose; find me on {{spotify}}.

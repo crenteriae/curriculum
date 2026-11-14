@@ -1,3 +1,6 @@
+import { spotify } from './constants';
+import type { Segment } from './output';
+
 export function downloadCv() {
 	const a = document.createElement('a');
 	a.href = '/cv_en.pdf';
@@ -5,4 +8,13 @@ export function downloadCv() {
 	document.body.appendChild(a);
 	a.click();
 	document.body.removeChild(a);
+}
+
+export function replaceSpotify(raw: string): Segment[] {
+	const parts = raw.split('{{spotify}}');
+	const segments: Segment[] = [];
+	if (parts[0]) segments.push(parts[0]);
+	segments.push(spotify);
+	if (parts[1]) segments.push(parts[1]);
+	return segments;
 }

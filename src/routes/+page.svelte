@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Commands, handleCommand } from '#lib';
-	import { translations as t, baseLanguage } from '#lib/localization.ts';
+	import { translations as t } from '#lib/content.ts';
+	import { baseLanguage } from '#lib/localization.ts';
 	import type { Segment } from '#lib/output.ts';
 	import { commandHelper } from '#lib/store.ts';
 	import { tick } from 'svelte';
@@ -119,6 +120,7 @@
 				aria-label="Terminal window"
 				onclick={() => inputContainer?.focus()}
 				onkeydown={(event) => {
+					if (event.target === inputContainer) return;
 					if (event.key === 'Enter' || event.key === ' ') {
 						event.preventDefault();
 						inputContainer?.focus();
